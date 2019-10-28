@@ -50,50 +50,28 @@ global.NODE = true;
 }
 
 
-const change_list = require( '../change/list' );
-
-const change_set = require( '../change/set' );
-
-const database_changeSkid = require( '../database/changeSkid' );
-
-const fabric_doc = require( '../fabric/doc' );
-
-const fabric_label = require( '../fabric/label' );
-
-const fabric_note = require( '../fabric/note' );
-
-const fabric_para = require( '../fabric/para' );
-
-const fabric_portal = require( '../fabric/portal' );
-
-const fabric_relation = require( '../fabric/relation' );
-
-const fabric_space = require( '../fabric/space' );
-
-const gleam_font_root = require( '../gleam/font/root' );
-
 const mongodb = require( 'mongodb' );
-
+const change_list = require( '../change/list' );
+const change_set = require( '../change/set' );
+const database_changeSkid = require( '../database/changeSkid' );
+const fabric_doc = require( '../fabric/doc' );
+const fabric_label = require( '../fabric/label' );
+const fabric_note = require( '../fabric/note' );
+const fabric_para = require( '../fabric/para' );
+const fabric_portal = require( '../fabric/portal' );
+const fabric_relation = require( '../fabric/relation' );
+const fabric_space = require( '../fabric/space' );
+const gleam_font_root = require( '../gleam/font/root' );
 const priorfabric_doc = require( '../priorfabric/doc' );
-
 const priorfabric_label = require( '../priorfabric/label' );
-
 const priorfabric_note = require( '../priorfabric/note' );
-
 const priorfabric_portal = require( '../priorfabric/portal' );
-
 const priorfabric_relation = require( '../priorfabric/relation' );
-
 const priorfabric_space = require( '../priorfabric/space' );
-
 const ref_space = require( '../ref/space' );
-
 const suspend = require( 'suspend' );
-
 const tim_path = require( 'tim.js/src/path/path' );
-
 const session_uid = require( '../session/uid' );
-
 const resume = suspend.resume;
 
 
@@ -104,9 +82,7 @@ const connectToSource =
 	function*( )
 {
 	const server = new mongodb.Server( config.src.host, config.src.port, { } );
-
 	const connector = new mongodb.Db( config.src.name, server, { w : 1 } );
-
 	return yield connector.open( resume( ) );
 };
 
@@ -118,9 +94,7 @@ const connectToTarget =
 	function*( )
 {
 	const server = new mongodb.Server( config.trg.host, config.trg.port, { } );
-
 	const connector = new mongodb.Db( config.trg.name, server, { w : 1 } );
-
 	return yield connector.open( resume( ) );
 };
 
@@ -179,11 +153,8 @@ const convertDoc =
 	for( let a = 0, aZ = pdoc.length; a < aZ; a++ )
 	{
 		const key = pdoc.getKey( a );
-
 		const ppara = pdoc.get( key );
-
 		const para = fabric_para.create( 'text', ppara.text );
-
 		doc = doc.create( 'twig:add', key, para );
 	}
 
@@ -224,13 +195,9 @@ const loadSpace =
 	)
 	{
 		convertJsonTypes( o );
-
 		const changeSkid = database_changeSkid.createFromJSON( o );
-
 		if( changeSkid._id !== seqZ ) throw new Error( 'sequence mismatch' );
-
 		seqZ++;
-
 		pspace = changeSkid.changeTree( pspace );
 	}
 
@@ -241,11 +208,8 @@ const loadSpace =
 	for( let a = 0, al = pspace.length; a < al; a++ )
 	{
 		const key = pspace.getKey( a );
-
 		const pitem = pspace.get( key );
-
 		let item;
-
 		switch( pitem.timtype )
 		{
 			case priorfabric_label :
@@ -307,19 +271,12 @@ const loadSpace =
 	for( let a = 0, al = pspace.length; a < al; a++ )
 	{
 		const key = pspace.getKey( a );
-
 		let item = pspace.get( key );
-
 		if( item.timtype !== fabric_relation ) continue;
-
 		const item1 = pspace.get( item.item1key );
-
 		const item2 = pspace.get( item.item2key );
-
 		if( item1 ) item = item.create( 'from', item.ancillaryFrom( item1 ) );
-
 		if( item2 ) item = item.create( 'to', item.ancillaryTo( item2 ) );
-
 		space = space.create( 'twig:set', key, item );
 	}
 
@@ -389,13 +346,9 @@ const run =
 	if( !dry ) yield trgConnection.dropDatabase( resume( ) );
 
 	const srcUsers = yield srcConnection.collection( 'users', resume( ) );
-
 	const srcSpaces = yield srcConnection.collection( 'spaces', resume( ) );
-
 	const trgGlobal = yield trgConnection.collection( 'global', resume( ) );
-
 	const trgUsers = yield trgConnection.collection( 'users', resume( ) );
-
 	const trgSpaces = yield trgConnection.collection( 'spaces', resume( ) );
 
 	console.log( '* creating trg.global' );

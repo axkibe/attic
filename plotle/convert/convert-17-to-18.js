@@ -51,7 +51,6 @@ global.NODE = true;
 
 
 const mongodb = require( 'mongodb' );
-
 const ref_space = require( '../ref/space' );
 
 
@@ -62,9 +61,7 @@ const connectToSource =
 	async function( )
 {
 	const server = new mongodb.Server( config.src.host, config.src.port, { } );
-
 	const connector = new mongodb.Db( config.src.name, server, { w : 1 } );
-
 	return await connector.open( );
 };
 
@@ -76,9 +73,7 @@ const connectToTarget =
 	async function( )
 {
 	const server = new mongodb.Server( config.trg.host, config.trg.port, { } );
-
 	const connector = new mongodb.Db( config.trg.name, server, { w : 1 } );
-
 	return await connector.open( );
 };
 
@@ -96,9 +91,7 @@ const convertJson =
 		if( key === 'ranks' )
 		{
 			obj.keys = obj.ranks;
-
 			delete obj.ranks;
-
 			continue;
 		}
 
@@ -150,7 +143,6 @@ const run =
 	console.log( '* connecting to src' );
 
 	const srcConnection = await connectToSource( );
-
 	const srcGlobal = await srcConnection.collection( 'global' );
 
 	let o = await srcGlobal.findOne( { _id : 'version' } );

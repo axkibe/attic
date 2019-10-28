@@ -32,31 +32,19 @@ global.CHECK = true;
 
 global.NODE = true;
 
-// registers with tim.js
 {
 	require( 'tim.js' );
-
 	const ending = 'src/tools/convert-18-to-19.js';
-
 	const filename = module.filename;
-
 	if( !filename.endsWith( ending ) ) throw new Error( );
-
 	const rootPath = filename.substr( 0, filename.length - ending.length );
-
-	// timcode path is one level up
 	const timcodePath = rootPath.substr( 0, rootPath.lastIndexOf( '/' ) ) + '/timcode/';
-
 	tim.catalog.addRootDir( rootPath, 'convert', timcodePath );
 }
 
-
 const mongodb = require( 'mongodb' );
-
 const ref_space = require( '../ref/space' );
-
 const tim_path = require( 'tim.js/src/path/path' );
-
 const trace_any = require( '../trace/any' );
 
 
@@ -67,9 +55,7 @@ const connectToSource =
 	async function( )
 {
 	const server = new mongodb.Server( config.src.host, config.src.port, { } );
-
 	const connector = new mongodb.Db( config.src.name, server, { w : 1 } );
-
 	return await connector.open( );
 };
 
@@ -81,9 +67,7 @@ const connectToTarget =
 	async function( )
 {
 	const server = new mongodb.Server( config.trg.host, config.trg.port, { } );
-
 	const connector = new mongodb.Db( config.trg.name, server, { w : 1 } );
-
 	return await connector.open( );
 };
 
@@ -128,7 +112,6 @@ const convertJson =
 				) );
 
 			delete obj[ key ];
-
 			continue;
 		}
 
@@ -158,14 +141,9 @@ const convertSpace =
 	const trgChanges =
 		await trgConnection.collection( 'changes:' + spaceRef.fullname );
 
-	for(
-		let o = await cursor.nextObject( );
-		o;
-		o = await cursor.nextObject( )
-	)
+	for( let o = await cursor.nextObject( ); o; o = await cursor.nextObject( ) )
 	{
 		convertJson( o );
-
 		if( !dry ) { await trgChanges.insert( o ); }
 	}
 };
@@ -180,7 +158,6 @@ const run =
 	console.log( '* connecting to src' );
 
 	const srcConnection = await connectToSource( );
-
 	const srcGlobal = await srcConnection.collection( 'global' );
 
 	let o = await srcGlobal.findOne( { _id : 'version' } );
@@ -196,13 +173,9 @@ const run =
 	if( !dry ) await trgConnection.dropDatabase( );
 
 	const srcUsers = await srcConnection.collection( 'users' );
-
 	const srcSpaces = await srcConnection.collection( 'spaces' );
-
 	const trgGlobal = await trgConnection.collection( 'global' );
-
 	const trgUsers = await trgConnection.collection( 'users' );
-
 	const trgSpaces = await trgConnection.collection( 'spaces' );
 
 	console.log( '* creating trg.global' );
@@ -235,18 +208,13 @@ const run =
 	)
 	{
 		if( !dry ) await trgSpaces.insert( o );
-
 		const spaceRef = ref_space.createUsernameTag( o.username, o.tag );
-
 		await convertSpace( srcConnection, trgConnection, spaceRef );
 	}
 
 	console.log( '* closing connections' );
-
 	srcConnection.close( );
-
 	trgConnection.close( );
-
 	console.log( '* done' );
 };
 
